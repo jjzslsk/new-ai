@@ -80,4 +80,8 @@ export function post<T = any>(
   })
 }
 
+export function ajax<T = any>(data: { url: string, params: any }){
+  return request.post( data.url , data.params  ).then()
+}
+
 export default post

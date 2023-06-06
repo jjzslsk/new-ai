@@ -1,8 +1,7 @@
 import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
-import { post } from '@/utils/request'
-import { useAuthStore, useSettingStore } from '@/store'
+import { post, ajax } from '@/utils/request'
+import { useQueryStore } from '@/store'
 import { getUserSession } from '@/utils/functions'
-
 
 export function fetchChatAPI<T = any>(
 	prompt: string,
@@ -22,6 +21,45 @@ export function fetchChatConfig<T = any>() {
 	})
 }
 
+export function fetchRepositoryList<T = any>(params: any) {
+	return ajax<T>({
+		url: '/chat/file/query',
+		params
+	})
+}
+export function fetchRepositoryDel<T = any>(params: any) {
+	return ajax<T>({
+		url: '/chat/file/delete',
+		params
+	})
+}
+export function fetchRepositorySave<T = any>(params: any) {
+	return ajax<T>({
+		url: '/chat/vector/save',
+		params
+	})
+}
+
+
+export function fetchToolList<T = any>(params: any) {
+	return ajax<T>({
+		url: '/chat/tool/query',
+		params
+	})
+}
+export function fetchToolDel<T = any>(params: any) {
+	return ajax<T>({
+		url: '/chat/tool/delete',
+		params
+	})
+}
+export function fetchToolSave<T = any>(params: any) {
+	return ajax<T>({
+		url: '/chat/tool/add',
+		params
+	})
+}
+
 export function fetchChatAPIProcess<T = any>(
 	params: {
 		prompt: string
@@ -30,48 +68,15 @@ export function fetchChatAPIProcess<T = any>(
 		onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void
 	},
 ) {
-	const settingStore = useSettingStore()
-	const authStore = useAuthStore()
-
 	let data: Record<string, any> = {
-		model: "gpt-3.5-turbo",
-		messages: [{ "role": "user", "content": params.prompt }],
-		temperature: 0.7
+		query: params.prompt,
+		model: useQueryStore().queryInfo.model,
+		title: useQueryStore().queryInfo.title,
+		user_id: `${getUserSession('user_id')}`,
 	}
-
-	if (authStore.isChatGPTAPI) {
-		data = {
-			...data,
-			systemMessage: settingStore.systemMessage,
-			temperature: settingStore.temperature,
-			top_p: settingStore.top_p,
-		}
-	}
-	let user_id: any = getUserSession("user_id")
-	let url: string = "";
-	if (params.prompt.slice(0, 6) === "自有知识库：") {
-		url = `/chat/queryaction?type=0&query=${params.prompt}`
-		params.prompt = params.prompt.slice(6)
-		data.messages[0].content = data.messages[0].content.slice(6)
-	} else if (params.prompt.slice(0, 6) === "外部API：") {
-		url = `/chat/queryaction?type=1&query=${params.prompt}`
-		params.prompt = params.prompt.slice(6)
-		data.messages[0].content = data.messages[0].content.slice(6)
-	}
-	// else if(params.prompt.slice(0,5) === "默认AI："){
-	//   url = `/chat/queryaction?type=2&query=${params.prompt}`
-	//   params.prompt = params.prompt.slice(6)
-	//   data.messages[0].content = data.messages[0].content.slice(6)
-	// }
-	else {
-		url = `/v1/chat/completions?uuid=${user_id}&query=${params.prompt}`
-	}
-
-	//chatgpt key
 	let headers: string = "";
-
 	return post<T>({
-		url: url,
+		url: `/chat/queryaction`,
 		headers: { 'Authorization': `Bearer ${headers}` },
 		data,
 		signal: params.signal,

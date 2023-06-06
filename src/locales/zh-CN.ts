@@ -75,7 +75,23 @@ export default {
 		httpsProxy: 'HTTPS Proxy',
 		balance: 'API余额',
 		monthlyUsage: '本月使用量',
-		randomness: "交流相关度"
+		randomness: "交流相关度",
+
+		toolType: "工具选择",
+		toolName: "工具名",
+		toolDescription: "工具描述",
+		toolDescribe: "说明描述",
+
+		repositoryType: "知识库选择",
+		repositoryUpload: "文档上传",
+		repositoryName: "知识库名称",
+		repositoryDoc: "文档总结",
+		repositorDescribe: "使用说明",
+
+		userName: "用户名",
+		model: "聊天模式",
+		tools: "工具选择",
+
 	},
 	store: {
 		siderButton: '提示词商店',

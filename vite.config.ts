@@ -3,8 +3,6 @@ import type { PluginOption } from 'vite'
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
-// import Components from 'unplugin-vue-components/vite'
-// import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 function setupPlugins(env: ImportMetaEnv): PluginOption[] {
 	return [
@@ -25,7 +23,6 @@ function setupPlugins(env: ImportMetaEnv): PluginOption[] {
 
 export default defineConfig((env) => {
 	const viteEnv = loadEnv(env.mode, process.cwd()) as unknown as ImportMetaEnv
-
 	return {
 		resolve: {
 			alias: {

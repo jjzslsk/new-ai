@@ -18,7 +18,7 @@ import { useUsingContext } from "./hooks/useUsingContext";
 import HeaderComponent from "./components/Header/index.vue";
 import { HoverButton, SvgIcon } from "@/components/common";
 import { useBasicLayout } from "@/hooks/useBasicLayout";
-import { useChatStore, usePromptStore, useQueryStore } from "@/store";
+import { useChatStore, usePromptStore } from "@/store";
 import { fetchChatAPIProcess } from "@/api";
 import { t } from "@/locales";
 
@@ -31,10 +31,6 @@ const dialog = useDialog();
 const ms = useMessage();
 
 const chatStore = useChatStore();
-const queryStore = useQueryStore();
-
-const queryInfo = computed(() => queryStore.queryInfo);
-const queryContent = ref(queryInfo.value.queryContent ?? "");
 
 const { isMobile } = useBasicLayout();
 const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } =
@@ -389,41 +385,6 @@ function handleStop() {
 	}
 }
 
-// 可优化部分
-// 搜索选项计算，这里使用value作为索引项，所以当出现重复value时渲染异常(多项同时出现选中效果)
-// 理想状态下其实应该是key作为索引项,但官方的renderOption会出现问题，所以就需要value反renderLabel实现
-const searchOptions = computed(() => {
-	// const arr: object[] = promptTemplate.value
-	// if(promptTemplate.value.length == 0){
-	//   // arr.unshift({
-	//   //     key: "默认AI",
-	//   //     value: "默认AI：",
-	//   //   })
-	//     arr.unshift({
-	//       key: "外部API",
-	//       value: "外部API：",
-	//     })
-	//     arr.unshift({
-	//       key: "自有知识库",
-	//       value: "自有知识库：",
-	//     })
-	// }else{
-	//   // promptTemplate.value.find((item: { key: string }) => item.key == "默认AI") || arr.push({ key: "默认AI", value: "默认AI："})
-	//   promptTemplate.value.find((item: { key: string }) => item.key == "外部API") || arr.push({ key: "外部API", value: "外部API："})
-	//   promptTemplate.value.find((item: { key: string }) => item.key == "自有知识库") || arr.push({ key: "自有知识库", value: "自有知识库："})
-	// }
-	// if (prompt.value.startsWith('/')) {
-	//   return promptTemplate.value.filter((item: { key: string }) => item.key.toLowerCase().includes(prompt.value.substring(1).toLowerCase())).map((obj: { value: any }) => {
-	//     return {
-	//       label: obj.value,
-	//       value: obj.value,
-	//     }
-	//   })
-	// }
-	// else {
-	//   return []
-	// }
-});
 
 // value反渲染key
 const renderOption = (option: { label: string }) => {
@@ -540,7 +501,6 @@ onUnmounted(() => {
 						</HoverButton> -->
 					<NAutoComplete
 						v-model:value="prompt"
-						:options="searchOptions"
 						:render-label="renderOption"
 					>
 						<template #default="{ handleInput, handleBlur, handleFocus }">

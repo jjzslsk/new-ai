@@ -5,6 +5,7 @@ import General from "./General.vue";
 import Advanced from "./Advanced.vue";
 import Repository from "./Repository.vue";
 import ToolKit from "./ToolKit.vue";
+import openInterface from "./openInterface.vue";
 import { useAuthStore } from "@/store";
 import { SvgIcon } from "@/components/common";
 
@@ -82,6 +83,13 @@ const closeModel = () => {
 						<span class="ml-2">{{ $t("setting.toolkit") }}</span>
 					</template>
 					<ToolKit />
+				</NTabPane>
+				<NTabPane name="openInterface" tab="openInterface">
+					<template #tab>
+						<SvgIcon class="text-lg" icon="ri:list-settings-line" />
+						<span class="ml-2">{{ $t("setting.openInterface") }}</span>
+					</template>
+					<openInterface />
 				</NTabPane>
 			</NTabs>
 		</div>

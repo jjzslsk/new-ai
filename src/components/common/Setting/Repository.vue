@@ -34,7 +34,6 @@ const uploadRef = ref<UploadInst | null>(null);
 
 function handleChange(options: { fileList: UploadFileInfo[] }): void {
 	fileListLength.value = options.fileList.length;
-	// alert("加载中...");
 }
 
 async function uploadData(): Promise<void> {
@@ -59,24 +58,37 @@ const handleFinish = ({
 	if (res.code == "200") {
 		message.success(res.message);
 		formState.file_id = res.data.file_id;
-		// formState.repositoryDoc = "";
-		formState.repositoryDoc = res.data.summary.text;
 	} else {
 		message.error(res.message);
 	}
-	return message;
+	return file;
 };
 
 async function save() {
+	if (formState.repositoryName.length == 0) {
+		message.warning("请输入名称");
+		return;
+	}
+	if (formState.file_id.length == 0 && formState.repositoryType == "add") {
+		message.warning("请上传文档");
+		return;
+	}
+	// if (formState.repositoryDoc.length == 0) {
+	// 	message.warning("请输入文档总结");
+	// 	return;
+	// }
+	if (formState.repositorDescribe.length == 0) {
+		message.warning("请输入使用说明");
+		return;
+	}
 	let param = {
 		index_name: formState.repositoryName,
 		file_id: formState.file_id,
-		final_report: formState.repositoryDoc,
+		final_report: formState.repositorDescribe,
 		instructions: formState.repositorDescribe,
 		user_id: `${getUserSession("user_id")}`,
 	};
-	const res = await fetchRepositorySave(param);
-	console.log(res);
+	await fetchRepositorySave(param);
 	dialog.success({
 		content: "保存成功",
 		positiveText: "确定",
@@ -147,7 +159,6 @@ const getRepositoryList = async () => {
 };
 const beforeUpload = (fileList: UploadFileInfo[]) => {
 	console.log("上传中...", fileList);
-	// alert("1122");
 };
 onMounted(() => {
 	getRepositoryList();
@@ -157,7 +168,7 @@ const noSideSpace = (value: string) =>
 	!value.startsWith(" ") && !value.endsWith(" ");
 </script>
 <template>
-	<div class="p-4 space-y-5 min-h-[480px]">
+	<div class="p-4 space-y-5 min-h-[400px]">
 		<div class="space-y-6">
 			<div class="flex items-center space-x-4">
 				<span class="flex-shrink-0 w-[100px]">{{
@@ -213,7 +224,7 @@ const noSideSpace = (value: string) =>
 					>
 				</div>
 			</div>
-			<div class="flex items-center space-x-4">
+			<div class="flex items-center space-x-4" v-if="false">
 				<span class="flex-shrink-0 w-[100px]">{{
 					$t("setting.repositoryDoc")
 				}}</span>

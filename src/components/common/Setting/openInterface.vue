@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
-import { fetchToolList, fetchToolSave, fetchToolDel } from "@/api";
+import {
+	fetchInterfaceList,
+	fetchInterfaceSave,
+	fetchInterfaceDel,
+} from "@/api";
 import {
 	NButton,
 	NInput,
@@ -14,70 +18,66 @@ const message = useMessage();
 const dialog = useDialog();
 
 const formState = reactive({
-	toolType: "add", //工具选择
-	toolName: "", //工具名称
-	toolDescription: "", //描述
-	toolDescribe: "", //说明
+	openType: "add", //模板选择
+	openName: "", //模板名称
+	openDescription: "", //模板内容
+	openDescribe: "", //接口地址
 });
 
-const selectList = ref<any>([{ label: "新增工具", value: "add" }]);
+const selectList = ref<any>([{ label: "新增接口", value: "add" }]);
 
 async function save() {
-	if (formState.toolName.length == 0) {
+	if (formState.openName.length == 0) {
 		message.warning("请输入名称");
 		return;
 	}
-	if (formState.toolDescription.length == 0) {
-		message.warning("请输入工具描述");
+	if (formState.openDescription.length == 0) {
+		message.warning("请输入模板内容");
 		return;
 	}
-	if (formState.toolDescribe.length == 0) {
-		message.warning("请输入说明");
-		return;
-	}
+
 	let param = {
-		name: formState.toolName,
-		description: formState.toolDescription,
-		usage: formState.toolDescribe,
+		title: formState.openName,
+		content: formState.openDescription,
+		url: formState.openDescribe,
 		user_id: `${getUserSession("user_id")}`,
 	};
-	const res = (await fetchToolSave(param)).data;
+	const res = (await fetchInterfaceSave(param)).data;
 	if (res.code == 200) {
 		dialog.success({
 			content: res.message,
 			positiveText: "确定",
 			onPositiveClick: () => {
-				(formState.toolName = ""),
-					(formState.toolType = "add"),
-					(formState.toolDescription = ""),
-					(formState.toolDescribe = ""),
-					(selectList.value = [{ label: "新增工具", value: "add" }]),
+				(formState.openName = ""),
+					(formState.openType = "add"),
+					(formState.openDescription = ""),
+					(selectList.value = [{ label: "新增模板", value: "add" }]),
 					getToolList();
 			},
 		});
+		formState.openDescribe = res.data.url;
 	}
 }
 
 async function del() {
-	if (formState.toolType == "" || formState.toolType == "add") {
-		message.warning("请选择需要删除的工具");
+	if (formState.openType == "" || formState.openType == "add") {
+		message.warning("请选择需要删除的模板");
 		return;
 	}
 	let param = {
 		user_id: `${getUserSession("user_id")}`,
-		name: formState.toolType,
+		name: formState.openType,
 	};
-	const res = (await fetchToolDel(param)).data;
+	const res = (await fetchInterfaceDel(param)).data;
 	if (res.code == 200) {
 		dialog.success({
 			content: res.success,
 			positiveText: "确定",
 			onPositiveClick: () => {
-				(formState.toolName = ""),
-					(formState.toolType = "add"),
-					(formState.toolDescription = ""),
-					(formState.toolDescribe = ""),
-					(selectList.value = [{ label: "新增工具", value: "add" }]),
+				(formState.openName = ""),
+					(formState.openType = "add"),
+					(formState.openDescription = ""),
+					(selectList.value = [{ label: "新增模板", value: "add" }]),
 					getToolList();
 			},
 		});
@@ -86,26 +86,24 @@ async function del() {
 
 const handleUpdateValue = (value: string, option: SelectOption) => {
 	if (value == "add") {
-		formState.toolName = "";
-		formState.toolDescription = "";
-		formState.toolDescribe = "";
+		formState.openName = "";
+		formState.openDescription = "";
 	} else {
-		formState.toolName = option.name + "";
-		formState.toolDescription = option.description + "";
-		formState.toolDescribe = option.usage + "";
+		formState.openName = option.name + "";
+		formState.openDescription = option.description + "";
 	}
 };
 const getToolList = async () => {
 	let param = {
 		user_id: `${getUserSession("user_id")}`,
 	};
-	const res = (await fetchToolList(param)).data;
+	const res = (await fetchInterfaceList(param)).data;
 	res.message.map((i: any, idx: any) => {
 		i.label = i.name;
 		i.value = i.name;
 		selectList.value.push(i);
 	});
-	formState.toolType = selectList.value[0].value;
+	formState.openType = selectList.value[0].value;
 };
 
 const noSideSpace = (value: string) =>
@@ -120,37 +118,31 @@ onMounted(() => {
 	<div class="p-4 space-y-5 min-h-[400px]">
 		<div class="space-y-6">
 			<div class="flex items-center space-x-4">
-				<span class="flex-shrink-0 w-[100px]">{{
-					$t("setting.toolType")
-				}}</span>
+				<span class="flex-shrink-0 w-[100px]">模板选择</span>
 				<div class="w-[200px]">
 					<NSelect
-						v-model:value="formState.toolType"
+						v-model:value="formState.openType"
 						@update:value="handleUpdateValue"
-						:disabled="formState.toolType.length == 0"
+						:disabled="formState.openType.length == 0"
 						:options="selectList"
 					/>
 				</div>
 			</div>
 			<div class="flex items-center space-x-4">
-				<span class="flex-shrink-0 w-[100px]">{{
-					$t("setting.toolName")
-				}}</span>
+				<span class="flex-shrink-0 w-[100px]"> 标题</span>
 				<div class="w-[200px]">
 					<NInput
-						v-model:value="formState.toolName"
+						v-model:value="formState.openName"
 						placeholder=""
 						:allow-input="noSideSpace"
 					/>
 				</div>
 			</div>
 			<div class="flex items-center space-x-4">
-				<span class="flex-shrink-0 w-[100px]">{{
-					$t("setting.toolDescription")
-				}}</span>
+				<span class="flex-shrink-0 w-[100px]">模板内容</span>
 				<div class="w-[300px]">
 					<NInput
-						v-model:value="formState.toolDescription"
+						v-model:value="formState.openDescription"
 						type="textarea"
 						placeholder=""
 						size="small"
@@ -163,12 +155,10 @@ onMounted(() => {
 				</div>
 			</div>
 			<div class="flex items-center space-x-4">
-				<span class="flex-shrink-0 w-[100px]">{{
-					$t("setting.toolDescribe")
-				}}</span>
+				<span class="flex-shrink-0 w-[100px]">接口地址</span>
 				<div class="w-[300px]">
 					<NInput
-						v-model:value="formState.toolDescribe"
+						v-model:value="formState.openDescribe"
 						type="textarea"
 						placeholder=""
 						size="small"

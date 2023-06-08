@@ -24,13 +24,39 @@ import type { QueryInfo } from "@/store/modules/query/helper";
 const emit = defineEmits(["update:closeModel"]);
 const message = useMessage();
 const queryStore = useQueryStore();
-const cities = ref(["1"]);
+const cities = ref<any>([]);
 const repositoryList = ref<any>([]);
 const repositoryType = ref<any>([]);
 const toolList = ref<any>([]);
 const tools = ref<any>([]);
+
 cities.value = useQueryStore().queryInfo.model.split(",");
+let repositoryData = useQueryStore().queryInfo.repository.length > 0 ? useQueryStore().queryInfo.repository.split(",") : []
+if(repositoryData.length > 0){
+	repositoryData.map(i=>{
+		repositoryType.value.push(i)
+	})
+}
+let toolData = useQueryStore().queryInfo.tool.length > 0 ? useQueryStore().queryInfo.tool.split(",") : []
+if(toolData.length > 0){
+	toolData.map(i=>{
+		tools.value.push(i)
+	})
+}
+
 async function save() {
+	if(cities.value.length == 0){
+		message.warning("至少选择一种聊天模式");
+		return
+	}
+	if(cities.value.toString().includes("2") && repositoryType.value.length == 0){
+		message.warning("至少选择一个知识库");
+		return
+	}
+	if(cities.value.toString().includes("3") && tools.value.length == 0){
+		message.warning("至少选择一种工具");
+		return
+	}
 	if (
 		cities.value.toString().includes("2") &&
 		cities.value.toString().includes("3")
@@ -52,6 +78,8 @@ async function save() {
 	let param = {
 		model: cities.value.toString(),
 		title: title,
+		repository: repositoryType.value.toString(),
+		tool: tools.value.toString(),
 	};
 	updateQueryInfo(param);
 }
@@ -72,7 +100,7 @@ const getToolList = async () => {
 		i.value = i.name;
 		toolList.value.push(i);
 	});
-	tools.value.push(toolList.value[0].value);
+	tools.value.length == 0 && tools.value.push(toolList.value[0].value)
 };
 
 const getRepositoryList = async () => {
@@ -85,7 +113,7 @@ const getRepositoryList = async () => {
 		i.value = i.index_name;
 		repositoryList.value.push(i);
 	});
-	repositoryType.value.push(repositoryList.value[0].value);
+	repositoryType.value.length == 0 && repositoryType.value.push(repositoryList.value[0].value)
 };
 
 onMounted(() => {

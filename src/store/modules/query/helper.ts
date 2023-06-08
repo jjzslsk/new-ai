@@ -3,6 +3,8 @@ const LOCAL_NAME = 'queryStorage'
 export interface QueryInfo {
   model: string
   title: string
+  repository: string
+  tool: string
 }
 
 export interface QueryState {
@@ -13,7 +15,9 @@ export function defaultSetting(): QueryState {
   return {
     queryInfo: {
       model: '1',
-      title: ''
+      title: '',
+      repository: '',
+      tool: '',
     },
   }
 }

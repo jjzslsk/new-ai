@@ -60,6 +60,25 @@ export function fetchToolSave<T = any>(params: any) {
 	})
 }
 
+export function fetchInterfaceList<T = any>(params: any) {
+	return ajax<T>({
+		url: '/chat/openapi/query',
+		params
+	})
+}
+export function fetchInterfaceDel<T = any>(params: any) {
+	return ajax<T>({
+		url: '/chat/openapi/delete',
+		params
+	})
+}
+export function fetchInterfaceSave<T = any>(params: any) {
+	return ajax<T>({
+		url: '/chat/openapi/add',
+		params
+	})
+}
+
 export function fetchChatAPIProcess<T = any>(
 	params: {
 		prompt: string

@@ -38,7 +38,7 @@ async function save() {
 
 	let param = {
 		title: formState.openName,
-		content: formState.openDescription,
+		context: formState.openDescription,
 		url: formState.openDescribe,
 		user_id: `${getUserSession("user_id")}`,
 	};
@@ -51,11 +51,11 @@ async function save() {
 				(formState.openName = ""),
 					(formState.openType = "add"),
 					(formState.openDescription = ""),
+					(formState.openDescribe = ""),
 					(selectList.value = [{ label: "新增模板", value: "add" }]),
-					getToolList();
+					getOpenList();
 			},
 		});
-		formState.openDescribe = res.data.url;
 	}
 }
 
@@ -71,14 +71,15 @@ async function del() {
 	const res = (await fetchInterfaceDel(param)).data;
 	if (res.code == 200) {
 		dialog.success({
-			content: res.success,
+			content: res.message,
 			positiveText: "确定",
 			onPositiveClick: () => {
 				(formState.openName = ""),
 					(formState.openType = "add"),
 					(formState.openDescription = ""),
+					(formState.openDescribe = ""),
 					(selectList.value = [{ label: "新增模板", value: "add" }]),
-					getToolList();
+					getOpenList();
 			},
 		});
 	}
@@ -88,19 +89,22 @@ const handleUpdateValue = (value: string, option: SelectOption) => {
 	if (value == "add") {
 		formState.openName = "";
 		formState.openDescription = "";
+		formState.openDescribe = "";
 	} else {
-		formState.openName = option.name + "";
-		formState.openDescription = option.description + "";
+		formState.openName = option.title + "";
+		formState.openDescription = option.context + "";
+		formState.openDescribe = option.url + "";
 	}
 };
-const getToolList = async () => {
+
+const getOpenList = async () => {
 	let param = {
 		user_id: `${getUserSession("user_id")}`,
 	};
 	const res = (await fetchInterfaceList(param)).data;
-	res.message.map((i: any, idx: any) => {
-		i.label = i.name;
-		i.value = i.name;
+	res.data.map((i: any, idx: any) => {
+		i.label = i.title;
+		i.value = i.context;
 		selectList.value.push(i);
 	});
 	formState.openType = selectList.value[0].value;
@@ -110,12 +114,12 @@ const noSideSpace = (value: string) =>
 	!value.startsWith(" ") && !value.endsWith(" ");
 
 onMounted(() => {
-	getToolList();
+	getOpenList();
 });
 </script>
 
 <template>
-	<div class="p-4 space-y-5 min-h-[400px]">
+	<div class="p-4 space-y-5 min-h-[370px]">
 		<div class="space-y-6">
 			<div class="flex items-center space-x-4">
 				<span class="flex-shrink-0 w-[100px]">模板选择</span>
@@ -161,7 +165,7 @@ onMounted(() => {
 						v-model:value="formState.openDescribe"
 						type="textarea"
 						placeholder=""
-						size="small"
+						size="tiny"
 						:autosize="{
 							minRows: 3,
 							maxRows: 5,

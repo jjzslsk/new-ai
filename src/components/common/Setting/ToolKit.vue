@@ -85,6 +85,8 @@ async function del() {
 }
 
 const handleUpdateValue = (value: string, option: SelectOption) => {
+	console.log(option.description);
+
 	if (value == "add") {
 		formState.toolName = "";
 		formState.toolDescription = "";
@@ -95,6 +97,7 @@ const handleUpdateValue = (value: string, option: SelectOption) => {
 		formState.toolDescribe = option.usage + "";
 	}
 };
+
 const getToolList = async () => {
 	let param = {
 		user_id: `${getUserSession("user_id")}`,

@@ -8,6 +8,7 @@ import {
 	NSelect,
 	useDialog,
 	SelectOption,
+	NInputGroup,
 } from "naive-ui";
 import { getUserSession } from "@/utils/functions";
 const message = useMessage();
@@ -17,8 +18,20 @@ const formState = reactive({
 	toolType: "add", //工具选择
 	toolName: "", //工具名称
 	toolDescription: "", //描述
-	toolDescribe: "", //说明
+
+	method: "get", //说明
+	url: "",
+	params: "", //参数
 });
+
+
+const requestOptions = ref<any>([
+	{ label: "GET", value: "get" },
+	{ label: "POST", value: "post" },
+	{ label: "PUT", value: "put" },
+	{ label: "DELETE", value: "delete" },
+	{ label: "HEAD", value: "head" },
+]);
 
 const selectList = ref<any>([{ label: "新增工具", value: "add" }]);
 
@@ -31,14 +44,10 @@ async function save() {
 		message.warning("请输入工具描述");
 		return;
 	}
-	if (formState.toolDescribe.length == 0) {
-		message.warning("请输入说明");
-		return;
-	}
-	let param = {
+	let param = { 
 		name: formState.toolName,
-		description: formState.toolDescription,
-		usage: formState.toolDescribe,
+		usage: formState.toolDescription,
+		description: `这个工具的请求地址是：${formState.url}；请求方式为${formState.method}；参数为${formState.params}`,
 		user_id: `${getUserSession("user_id")}`,
 	};
 	const res = (await fetchToolSave(param)).data;
@@ -50,7 +59,8 @@ async function save() {
 				(formState.toolName = ""),
 					(formState.toolType = "add"),
 					(formState.toolDescription = ""),
-					(formState.toolDescribe = ""),
+					(formState.url = ""),
+					(formState.params = ""),
 					(selectList.value = [{ label: "新增工具", value: "add" }]),
 					getToolList();
 			},
@@ -76,7 +86,8 @@ async function del() {
 				(formState.toolName = ""),
 					(formState.toolType = "add"),
 					(formState.toolDescription = ""),
-					(formState.toolDescribe = ""),
+					(formState.url = ""),
+					(formState.params = ""),
 					(selectList.value = [{ label: "新增工具", value: "add" }]),
 					getToolList();
 			},
@@ -85,16 +96,17 @@ async function del() {
 }
 
 const handleUpdateValue = (value: string, option: SelectOption) => {
-	console.log(option.description);
-
 	if (value == "add") {
 		formState.toolName = "";
 		formState.toolDescription = "";
-		formState.toolDescribe = "";
+		formState.url = "";
+		formState.params = "";
 	} else {
 		formState.toolName = option.name + "";
-		formState.toolDescription = option.description + "";
-		formState.toolDescribe = option.usage + "";
+		formState.toolDescription = option.usage + "";
+		formState.method = "";
+		formState.url = "";
+		formState.params = "";
 	}
 };
 
@@ -167,13 +179,30 @@ onMounted(() => {
 			</div>
 			<div class="flex items-center space-x-4">
 				<span class="flex-shrink-0 w-[100px]">{{
-					$t("setting.toolDescribe")
+					$t("setting.method")
 				}}</span>
-				<div class="w-[300px]">
+				<div class="w-[400px]">
+					<NInputGroup>
+						<NSelect :style="{ width: '25%' }" v-model:value="formState.method"  :options="requestOptions" />
+						<NInput
+							:style="{ width: '75%' }"
+							v-model:value="formState.url"
+							placeholder="https://"
+							size="small"
+							:allow-input="noSideSpace"
+						/>
+					</NInputGroup>
+				</div>
+			</div>
+			<div class="flex items-center space-x-4">
+				<span class="flex-shrink-0 w-[100px]">{{
+					$t("setting.params")
+				}}</span>
+				<div class="w-[400px]">
 					<NInput
-						v-model:value="formState.toolDescribe"
+						v-model:value="formState.params"
 						type="textarea"
-						placeholder=""
+						placeholder="{id: '1'}"
 						size="small"
 						:autosize="{
 							minRows: 3,

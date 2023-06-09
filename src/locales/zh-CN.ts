@@ -80,7 +80,8 @@ export default {
 		toolType: "工具选择",
 		toolName: "工具名",
 		toolDescription: "工具描述",
-		toolDescribe: "说明描述",
+		method: "请求方式",
+		params: "参数",
 
 		repositoryType: "知识库选择",
 		repositoryUpload: "文档上传",

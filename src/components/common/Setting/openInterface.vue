@@ -24,7 +24,7 @@ const formState = reactive({
 	openDescribe: "", //接口地址
 });
 
-const selectList = ref<any>([{ label: "新增接口", value: "add" }]);
+const selectList = ref<any>([]);
 
 async function save() {
 	if (formState.openName.length == 0) {
@@ -35,10 +35,9 @@ async function save() {
 		message.warning("请输入模板内容");
 		return;
 	}
-
 	let param = {
 		title: formState.openName,
-		context: formState.openDescription,
+		content: formState.openDescription,
 		url: formState.openDescribe,
 		user_id: `${getUserSession("user_id")}`,
 	};
@@ -47,13 +46,13 @@ async function save() {
 		dialog.success({
 			content: res.message,
 			positiveText: "确定",
-			onPositiveClick: () => {
-				(formState.openName = ""),
-					(formState.openType = "add"),
-					(formState.openDescription = ""),
-					(formState.openDescribe = ""),
-					(selectList.value = [{ label: "新增模板", value: "add" }]),
-					getOpenList();
+			onPositiveClick: async () => {
+				await getOpenList();
+				let item = {...selectList.value.find((i: any)=>i.title == formState.openName)}
+				formState.openType = item.title
+				formState.openName = item.title
+				formState.openDescription = item.content
+				formState.openDescribe = item.url
 			},
 		});
 	}
@@ -73,13 +72,14 @@ async function del() {
 		dialog.success({
 			content: res.message,
 			positiveText: "确定",
-			onPositiveClick: () => {
+			onPositiveClick: async () => {
 				(formState.openName = ""),
 					(formState.openType = "add"),
 					(formState.openDescription = ""),
 					(formState.openDescribe = ""),
 					(selectList.value = [{ label: "新增模板", value: "add" }]),
-					getOpenList();
+					await getOpenList();
+					formState.openType = selectList.value[0].title;
 			},
 		});
 	}
@@ -92,22 +92,23 @@ const handleUpdateValue = (value: string, option: SelectOption) => {
 		formState.openDescribe = "";
 	} else {
 		formState.openName = option.title + "";
-		formState.openDescription = option.context + "";
+		formState.openDescription = option.content + "";
 		formState.openDescribe = option.url + "";
 	}
 };
 
 const getOpenList = async () => {
+	selectList.value = [{ label: "新增接口", value: "add" }]
 	let param = {
 		user_id: `${getUserSession("user_id")}`,
 	};
 	const res = (await fetchInterfaceList(param)).data;
-	res.data.map((i: any, idx: any) => {
+	res.message.map((i: any, idx: any) => {
 		i.label = i.title;
-		i.value = i.context;
+		i.value = i.title;
+		i.content = i.content;
 		selectList.value.push(i);
 	});
-	formState.openType = selectList.value[0].value;
 };
 
 const noSideSpace = (value: string) =>

@@ -121,8 +121,6 @@ onMounted(() => {
 	getToolList();
 });
 
-const appStore = useAppStore();
-console.log(appStore);
 const userStore = useUserStore();
 
 const { isMobile } = useBasicLayout();

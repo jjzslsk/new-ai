@@ -17,7 +17,7 @@ import {
 	NThing,
 	useMessage,
 } from "naive-ui";
-import PromptRecommend from "../../../assets/recommend.json";
+// import PromptRecommend from "../../../assets/recommend.json";
 import { SvgIcon } from "..";
 import { usePromptStore } from "@/store";
 import { useBasicLayout } from "@/hooks/useBasicLayout";
@@ -62,7 +62,8 @@ const { isMobile } = useBasicLayout();
 const promptStore = usePromptStore();
 
 // Prompt在线导入推荐List,根据部署者喜好进行修改(assets/recommend.json)
-const promptRecommendList = PromptRecommend;
+// const promptRecommendList = PromptRecommend;
+const promptRecommendList = ref<any>([]);
 const promptList = ref<any>(promptStore.promptList);
 
 // 用于添加修改的临时prompt参数
@@ -362,8 +363,7 @@ const dataSource = computed(() => {
 			return item.renderKey.includes(value) || item.renderValue.includes(value);
 		});
 	}
-	// data = data.filter((i: any)=> i.key != "自有知识库" && i.key != "外部API" && i.key != "默认AI")
-	data = data.filter((i: any) => i.key != "自有知识库" && i.key != "外部API");
+
 	return data;
 });
 </script>

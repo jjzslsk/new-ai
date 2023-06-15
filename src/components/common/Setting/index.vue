@@ -36,7 +36,6 @@ const show = computed({
 	},
 });
 const closeModel = () => {
-	console.log("====---");
 	emit("update:visible", false);
 };
 </script>

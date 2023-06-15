@@ -158,7 +158,6 @@ const getRepositoryList = async () => {
 	formState.repositoryType = selectList.value[0].value;
 };
 const beforeUpload = (fileList: UploadFileInfo[]) => {
-	console.log("上传中...", fileList);
 };
 onMounted(() => {
 	getRepositoryList();

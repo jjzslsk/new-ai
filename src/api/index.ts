@@ -103,6 +103,34 @@ export function fetchChatAPIProcess<T = any>(
 	})
 }
 
+// export function fetchChatAPIProcess<T = any>(
+// 	params: {
+// 		prompt: string
+// 		options?: { conversationId?: string; parentMessageId?: string }
+// 		signal?: GenericAbortSignal
+// 		onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void
+// 	},
+// ) {
+
+// 	let data: Record<string, any> = {
+// 		query: params.prompt,
+// 		model: useQueryStore().queryInfo.model,
+// 		title: useQueryStore().queryInfo.title,
+// 		user_id: `${getUserSession('user_id')}`,
+// 	}
+
+// 	return post<T>({
+// 		url: `/chat/streamchat`,
+// 		headers: {
+// 			Accept: "application/json",
+// 			"Content-Type": "application/json",
+// 		},
+// 		data,
+// 		signal: params.signal,
+// 		onDownloadProgress: params.onDownloadProgress,
+// 	})
+// }
+
 export function fetchSession<T>() {
 	return post<T>({
 		url: '/session',

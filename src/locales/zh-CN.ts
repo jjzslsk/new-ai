@@ -95,7 +95,7 @@ export default {
 
 	},
 	store: {
-		siderButton: '提示词商店',
+		siderButton: '提示词库',
 		local: '本地',
 		online: '在线',
 		title: '标题',

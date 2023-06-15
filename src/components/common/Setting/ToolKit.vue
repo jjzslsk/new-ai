@@ -47,7 +47,12 @@ async function save() {
 	let param = { 
 		name: formState.toolName,
 		usage: formState.toolDescription,
-		description: `这个工具的请求地址是：${formState.url}；请求方式为${formState.method}；参数为${formState.params}`,
+		descriptionDisPlay: {
+			method: formState.method,
+			url: formState.url,
+			params: formState.params,
+		},
+		description: `你是Python执行器\n你要发送HTTP请求并返回数据HTTP协议相关的url是${formState.url}请求方法是${formState.method}参数是${formState.params}请你输出数据`,
 		user_id: `${getUserSession("user_id")}`,
 	};
 	const res = (await fetchToolSave(param)).data;
@@ -101,12 +106,13 @@ const handleUpdateValue = (value: string, option: SelectOption) => {
 		formState.toolDescription = "";
 		formState.url = "";
 		formState.params = "";
+		formState.method = "get";
 	} else {
 		formState.toolName = option.name + "";
 		formState.toolDescription = option.usage + "";
-		formState.method = "";
-		formState.url = "";
-		formState.params = "";
+		formState.method = option.method + "";
+		formState.url = option.url + "";
+		formState.params = option.params + "";
 	}
 };
 
@@ -118,6 +124,9 @@ const getToolList = async () => {
 	res.message.map((i: any, idx: any) => {
 		i.label = i.name;
 		i.value = i.name;
+		i.method = i.descriptionDisPlay.method;
+		i.params = i.descriptionDisPlay.params;
+		i.url = i.descriptionDisPlay.url;
 		selectList.value.push(i);
 	});
 	formState.toolType = selectList.value[0].value;

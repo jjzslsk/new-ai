@@ -148,9 +148,7 @@ async function onConversation() {
 							return fetchChatAPIOnce();
 						}
 						scrollToBottomIfAtBottom();
-					} catch (error) {
-						//
-					}
+					} catch (error) {}
 				},
 			});
 			updateChatSome(+uuid, dataSources.value.length - 1, { loading: false });
@@ -159,6 +157,7 @@ async function onConversation() {
 		await fetchChatAPIOnce();
 	} catch (error: any) {
 		// const errorMessage = error?.message ?? t('common.wrong')
+		//  1
 		const errorMessage = error?.message ?? t(error.choices[0].message.content);
 
 		if (error.message === "canceled") {
@@ -264,9 +263,7 @@ async function onRegenerate(index: number) {
 							message = "";
 							return fetchChatAPIOnce();
 						}
-					} catch (error) {
-						//
-					}
+					} catch (error) {}
 				},
 			});
 			updateChatSome(+uuid, index, { loading: false });
@@ -281,6 +278,7 @@ async function onRegenerate(index: number) {
 		}
 
 		// const errorMessage = error?.message ?? t('common.wrong')
+		// 2
 		const errorMessage = error?.message ?? t(error.choices[0].message.content);
 
 		updateChat(+uuid, index, {
@@ -385,6 +383,23 @@ function handleStop() {
 	}
 }
 
+// 提示词商店
+const searchOptions = computed(() => {
+	if (prompt.value.startsWith("/")) {
+		return promptTemplate.value
+			.filter((item: { key: string }) =>
+				item.key.toLowerCase().includes(prompt.value.substring(1).toLowerCase())
+			)
+			.map((obj: { value: any }) => {
+				return {
+					label: obj.value,
+					value: obj.value,
+				};
+			});
+	} else {
+		return [];
+	}
+});
 
 // value反渲染key
 const renderOption = (option: { label: string }) => {
@@ -501,6 +516,7 @@ onUnmounted(() => {
 						</HoverButton> -->
 					<NAutoComplete
 						v-model:value="prompt"
+						:options="searchOptions"
 						:render-label="renderOption"
 					>
 						<template #default="{ handleInput, handleBlur, handleFocus }">
